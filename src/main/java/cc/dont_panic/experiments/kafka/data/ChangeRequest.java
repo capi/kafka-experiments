@@ -1,9 +1,16 @@
 package cc.dont_panic.experiments.kafka.data;
 
+import org.apache.kafka.common.serialization.Serializer;
+
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public class ChangeRequest {
 
+    public static final Serializer<ChangeRequest> VALUE_SERIALIZER = (topic, data) -> {
+        String serializableString = data.id + ":" + data.propertyName + ":" + data.propertyValue;
+        return serializableString.getBytes(StandardCharsets.UTF_8);
+    };
     private final long id;
     private final String propertyName;
     private final String propertyValue;
