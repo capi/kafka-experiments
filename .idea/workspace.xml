@@ -5,9 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c38930cb-e31e-4f69-8bd1-536753e6d150" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/data/ChangeRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/data/ChangeStreamGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/KafkaExperimentStarter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/KafkaExperimentStarter.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -48,6 +45,11 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="cc.dont_panic.experiments.kafka" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
