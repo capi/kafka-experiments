@@ -6,8 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="c38930cb-e31e-4f69-8bd1-536753e6d150" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/ChangeRequestProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/ChangeRequestProcessor.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/KafkaExperimentStarter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/KafkaExperimentStarter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/data/ChangeRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/data/ChangeRequest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,6 +52,26 @@
     <key name="CreateClassDialog.RecentsKey">
       <recent name="cc.dont_panic.experiments.kafka" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="KafkaExperimentStarter" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="cc.dont_panic.experiments.kafka.KafkaExperimentStarter" />
+      <module name="kafka-experiments.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="cc.dont_panic.experiments.kafka.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.KafkaExperimentStarter" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">

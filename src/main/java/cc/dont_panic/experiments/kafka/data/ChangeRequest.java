@@ -1,5 +1,6 @@
 package cc.dont_panic.experiments.kafka.data;
 
+import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serializer;
 
 import java.nio.charset.StandardCharsets;
@@ -11,6 +12,12 @@ public class ChangeRequest {
         String serializableString = data.id + ":" + data.propertyName + ":" + data.propertyValue;
         return serializableString.getBytes(StandardCharsets.UTF_8);
     };
+    public static final Deserializer<ChangeRequest> VALUE_DESERIALIZER = (topic, bytes) -> {
+        String serializedString = new String(bytes, StandardCharsets.UTF_8);
+        String[] parts = serializedString.split(":");
+        return new ChangeRequest(Long.parseLong(parts[0]), parts[1], parts[2]);
+    };
+
     private final long id;
     private final String propertyName;
     private final String propertyValue;
