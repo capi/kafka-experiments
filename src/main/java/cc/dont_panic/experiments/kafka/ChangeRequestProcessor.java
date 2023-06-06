@@ -1,8 +1,11 @@
 package cc.dont_panic.experiments.kafka;
 
 import cc.dont_panic.experiments.kafka.data.ChangeRequest;
+import cc.dont_panic.experiments.kafka.data.PersistedProperty;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -17,7 +20,7 @@ public class ChangeRequestProcessor {
         this.changeRecordConsumer = changeRecordConsumer;
     }
 
-    public void consumeUntilIdle() {
+    public void consumeUntilIdle(Producer<String, PersistedProperty> stateProducer) {
         changeRecordConsumer.subscribe(Collections.singleton(kafkaConfig.getChangeRequestsTopicName()));
         try {
             AtomicLong counter = new AtomicLong();
@@ -30,6 +33,9 @@ public class ChangeRequestProcessor {
                     consumerRecords.forEach(record -> {
                         counter.incrementAndGet();
                         System.out.println("From partition " + record.partition() + " offset " + record.offset() + " consumed " + record.key() + ": " + record.value());
+
+                        PersistedProperty pp = new PersistedProperty(record.value().getId(), record.value().getPropertyName(), record.value().getPropertyValue());
+                        stateProducer.send(new ProducerRecord<>(kafkaConfig.getStateTopicName(), record.partition(), pp.getKey(), pp));
                     });
                 } else {
                     changeRecordConsumer.commitSync(); // wait until we have committed

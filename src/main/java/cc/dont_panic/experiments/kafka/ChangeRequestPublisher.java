@@ -13,14 +13,19 @@ public class ChangeRequestPublisher {
     private final Producer<Long, ChangeRequest> producer;
     private final ChangeRequestStreamGenerator changeRequestStreamGenerator;
 
-    public ChangeRequestPublisher(KafkaConfig kafkaConfig, Producer<Long, ChangeRequest> producer, ChangeRequestStreamGenerator changeRequestStreamGenerator) {
+    private final boolean verbose;
+
+    public ChangeRequestPublisher(KafkaConfig kafkaConfig, Producer<Long, ChangeRequest> producer, ChangeRequestStreamGenerator changeRequestStreamGenerator, boolean verbose) {
         this.kafkaConfig = kafkaConfig;
         this.producer = producer;
         this.changeRequestStreamGenerator = changeRequestStreamGenerator;
+        this.verbose = verbose;
     }
 
     private void onCompletion(ChangeRequest changeRequest, RecordMetadata recordMetadata, Exception exception) {
-        System.out.println(changeRequest.getId() + ": Record written to partition " + recordMetadata.partition()  + " offset " + recordMetadata.offset() + " timestamp " + recordMetadata.timestamp() + ": " + changeRequest);
+        if (verbose) {
+            System.out.println(changeRequest.getId() + ": Record written to partition " + recordMetadata.partition() + " offset " + recordMetadata.offset() + " timestamp " + recordMetadata.timestamp() + ": " + changeRequest);
+        }
     }
 
     public void publishChanges(int numberOfChanges) {
@@ -29,6 +34,7 @@ public class ChangeRequestPublisher {
         changeStream
                 .takeWhile(cr -> counter.getAndIncrement() < numberOfChanges)
                 .forEach(cr -> producer.send(producerRecordFor(cr), (m, e) -> onCompletion(cr, m, e)));
+        System.out.println("Published " + (counter.get() - 1) + " records.");
     }
 
     private ProducerRecord<Long, ChangeRequest> producerRecordFor(ChangeRequest cr) {

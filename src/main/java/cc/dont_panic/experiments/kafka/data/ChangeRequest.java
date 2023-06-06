@@ -1,6 +1,7 @@
 package cc.dont_panic.experiments.kafka.data;
 
 import org.apache.kafka.common.serialization.Deserializer;
+import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
 
 import java.nio.charset.StandardCharsets;
@@ -16,6 +17,17 @@ public class ChangeRequest {
         String serializedString = new String(bytes, StandardCharsets.UTF_8);
         String[] parts = serializedString.split(":");
         return new ChangeRequest(Long.parseLong(parts[0]), parts[1], parts[2]);
+    };
+    public static final Serde<ChangeRequest> SERDE = new Serde<ChangeRequest>() {
+        @Override
+        public Serializer<ChangeRequest> serializer() {
+            return VALUE_SERIALIZER;
+        }
+
+        @Override
+        public Deserializer<ChangeRequest> deserializer() {
+            return VALUE_DESERIALIZER;
+        }
     };
 
     private final long id;

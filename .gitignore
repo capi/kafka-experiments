@@ -1,3 +1,5 @@
+kafka-streams-state-dir/
+
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
