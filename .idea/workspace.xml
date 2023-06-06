@@ -4,12 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c38930cb-e31e-4f69-8bd1-536753e6d150" name="Changes" comment="Add references and documentation">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/ChangeRequestProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/ChangeRequestProcessor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/KafkaExperimentStarter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/KafkaExperimentStarter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/MyChangeRequestProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/MyChangeRequestProcessor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/data/PersistedProperty.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/data/PersistedProperty.java" afterDir="false" />
+    <list default="true" id="c38930cb-e31e-4f69-8bd1-536753e6d150" name="Changes" comment="Track last 3 values in PersistedProperty">
+      <change beforePath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/KafkaStreamsApp.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cc/dont_panic/experiments/kafka/KafkaStreamsApp.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,7 +100,14 @@
       <option name="project" value="LOCAL" />
       <updated>1686089689549</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Track last 3 values in PersistedProperty">
+      <created>1686090157357</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1686090157357</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -121,7 +124,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Convert to a Kafka Streams application" />
     <MESSAGE value="Add references and documentation" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add references and documentation" />
+    <MESSAGE value="Track last 3 values in PersistedProperty" />
+    <option name="LAST_COMMIT_MESSAGE" value="Track last 3 values in PersistedProperty" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
 </project>

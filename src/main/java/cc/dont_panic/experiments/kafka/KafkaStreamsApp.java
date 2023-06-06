@@ -51,6 +51,8 @@ public class KafkaStreamsApp {
         // TODO: If local state is lost, changes are streamed in before KTable is "current", resulting in wrong
         // "new" events, which could potentially cause corruption of the data in the topic
 
+        // TODO: Custom partitioning strategy for state topic
+
         KTable<String, PersistedProperty> table = builder
                 .table(kafkaConfig.getStateTopicName(),
                         Consumed.with(Serdes.String(), PersistedProperty.SERDE)
