@@ -8,6 +8,9 @@ import org.apache.kafka.streams.processor.api.FixedKeyRecord;
 import org.apache.kafka.streams.state.TimestampedKeyValueStore;
 import org.apache.kafka.streams.state.ValueAndTimestamp;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MyChangeRequestProcessor implements FixedKeyProcessor<Long, ChangeRequest, ChangeRequest> {
 
     private FixedKeyProcessorContext<Long, ChangeRequest> context;
@@ -32,8 +35,25 @@ public class MyChangeRequestProcessor implements FixedKeyProcessor<Long, ChangeR
         } else {
             System.out.println("Currently contains: " + persistedProperty);
         }
-        PersistedProperty value = new PersistedProperty(v.getId(), v.getPropertyName(), v.getPropertyValue());
-        stateStore.put(key, ValueAndTimestamp.make(value, record.timestamp()));
+
+        boolean needsUpdate = persistedProperty == null;
+
+        List<String> newList = new ArrayList<>(3);
+        if (persistedProperty != null) {
+            newList.addAll(persistedProperty.value().getValues());
+        }
+        if (!newList.contains(v.getPropertyValue())) {
+            if (newList.size() >= 3) newList.remove(0);
+            newList.add(v.getPropertyValue());
+            needsUpdate = true;
+        }
+
+        if (needsUpdate) {
+            PersistedProperty value = new PersistedProperty(v.getId(), v.getPropertyName(), newList);
+            stateStore.put(key, ValueAndTimestamp.make(value, record.timestamp()));
+            System.out.println("New state: " + value);
+        }
+
         context.forward(record);
     }
 }

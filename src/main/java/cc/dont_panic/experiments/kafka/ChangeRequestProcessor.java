@@ -9,6 +9,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class ChangeRequestProcessor {
@@ -34,7 +35,7 @@ public class ChangeRequestProcessor {
                         counter.incrementAndGet();
                         System.out.println("From partition " + record.partition() + " offset " + record.offset() + " consumed " + record.key() + ": " + record.value());
 
-                        PersistedProperty pp = new PersistedProperty(record.value().getId(), record.value().getPropertyName(), record.value().getPropertyValue());
+                        PersistedProperty pp = new PersistedProperty(record.value().getId(), record.value().getPropertyName(), List.of(record.value().getPropertyValue()));
                         stateProducer.send(new ProducerRecord<>(kafkaConfig.getStateTopicName(), record.partition(), pp.getKey(), pp));
                     });
                 } else {

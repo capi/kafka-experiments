@@ -5,18 +5,29 @@ import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serializer;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class PersistedProperty {
 
     public static final Serializer<PersistedProperty> VALUE_SERIALIZER = (topic, data) -> {
-        return (data.id + ":" + data.property + ":" + data.value).getBytes(StandardCharsets.UTF_8);
+        StringBuilder valueStr = new StringBuilder();
+        if (data.values != null) {
+            for (String value : data.values) {
+                if (valueStr.length() > 0) valueStr.append(",");
+                valueStr.append(value);
+            }
+        }
+
+        return (data.id + ":" + data.property + ":" + valueStr).getBytes(StandardCharsets.UTF_8);
     };
 
     public static final Deserializer<PersistedProperty> VALUE_DESERIALIZER = (topic, data) -> {
         String encoded = new String(data, StandardCharsets.UTF_8);
         String[] parts = encoded.split(":", 3);
-        return new PersistedProperty(Long.parseLong(parts[0]), parts[1], parts[2]);
+        String[] values = parts[2].split(",");
+        return new PersistedProperty(Long.parseLong(parts[0]), parts[1], Arrays.asList(values));
     };
     public static final Serde<PersistedProperty> SERDE = new Serde<PersistedProperty>() {
         @Override
@@ -34,12 +45,12 @@ public class PersistedProperty {
 
     private final String property;
 
-    private final String value;
+    private final List<String> values;
 
-    public PersistedProperty(long id, String property, String value) {
+    public PersistedProperty(long id, String property, List<String> values) {
         this.id = id;
         this.property = property;
-        this.value = value;
+        this.values = values;
     }
 
     public static String keyFor(long id, String propertyName) {
@@ -58,8 +69,8 @@ public class PersistedProperty {
         return property;
     }
 
-    public String getValue() {
-        return value;
+    public List<String> getValues() {
+        return values;
     }
 
     @Override
@@ -67,7 +78,7 @@ public class PersistedProperty {
         return "PersistedProperty{" +
                 "id=" + id +
                 ", property='" + property + '\'' +
-                ", value='" + value + '\'' +
+                ", values='" + values + '\'' +
                 '}';
     }
 
@@ -78,14 +89,14 @@ public class PersistedProperty {
 
         if (id != that.id) return false;
         if (!Objects.equals(property, that.property)) return false;
-        return Objects.equals(value, that.value);
+        return Objects.equals(values, that.values);
     }
 
     @Override
     public int hashCode() {
         int result = (int) (id ^ (id >>> 32));
         result = 31 * result + (property != null ? property.hashCode() : 0);
-        result = 31 * result + (value != null ? value.hashCode() : 0);
+        result = 31 * result + (values != null ? values.hashCode() : 0);
         return result;
     }
 
