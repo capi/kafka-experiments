@@ -9,7 +9,6 @@ import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.processor.TimestampExtractor;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
@@ -35,19 +34,31 @@ public class KafkaStreamsApp {
         streamsProps.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootstrapServer());
         streamsProps.put(StreamsConfig.STATE_DIR_CONFIG, ensureStateDir().toAbsolutePath().toString());
         streamsProps.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, "2500");
+        // https://docs.confluent.io/platform/current/streams/developer-guide/optimizing-streams.html
+        // use source topic as change log topic
+        streamsProps.put(StreamsConfig.TOPOLOGY_OPTIMIZATION_CONFIG, StreamsConfig.OPTIMIZE);
+        // increase timeout to workaround timing issues with building the local state store
+        // NOTE: may hang the processor!
+        //streamsProps.put(StreamsConfig.MAX_TASK_IDLE_MS_CONFIG, "3600000");
 
         StreamsBuilder builder = new StreamsBuilder();
 
-        TimestampExtractor tableTimestampExtractor = (r, pt) -> 0L;
+        // with this timestamp extractor, we force Kafka to read the table before processing anything else
+        // https://stackoverflow.com/questions/56556270/can-kafka-streams-be-configured-to-wait-for-ktable-to-load
+        // NOTE: does not seem to work
+        //TimestampExtractor tableTimestampExtractor = (r, pt) -> 1L;
+
+        // TODO: If local state is lost, changes are streamed in before KTable is "current", resulting in wrong
+        // "new" events, which could potentially cause corruption of the data in the topic
 
         KTable<String, PersistedProperty> table = builder
                 .table(kafkaConfig.getStateTopicName(),
-//                        Consumed.with(Serdes.String(), PersistedProperty.SERDE)
-//                                .withTimestampExtractor(tableTimestampExtractor),
+                        Consumed.with(Serdes.String(), PersistedProperty.SERDE)
+                                /*.withTimestampExtractor(tableTimestampExtractor)*/,
                         Materialized.<String, PersistedProperty, KeyValueStore<Bytes, byte[]>>as("state-store")
                                 .withKeySerde(Serdes.String())
-                                .withValueSerde(PersistedProperty.SERDE)
-                                .withLoggingDisabled());
+                                .withValueSerde(PersistedProperty.SERDE));
+        // flush the changes back to state topic
         table.toStream().to(kafkaConfig.getStateTopicName());
 
         KStream<Long, ChangeRequest> changeRequestStream = builder.stream(kafkaConfig.getChangeRequestsTopicName(),
@@ -56,7 +67,7 @@ public class KafkaStreamsApp {
                 .foreach((k, v) -> System.out.println("Received: " + k + ": " + v));
 
 
-        Topology topology = builder.build();
+        Topology topology = builder.build(streamsProps);
         System.out.println(topology.describe().toString());
         try (KafkaStreams kafkaStreams = new KafkaStreams(topology, streamsProps)) {
             final CountDownLatch shutdownLatch = new CountDownLatch(1);
@@ -89,7 +100,7 @@ public class KafkaStreamsApp {
             }).start();
 
             ReadOnlyKeyValueStore<Long, ChangeRequest> store = kafkaStreams.store(StoreQueryParameters.fromNameAndType("state-store", QueryableStoreTypes.keyValueStore()));
-            System.out.println("expected size" + store.approximateNumEntries());
+            System.out.println("approx size=" + store.approximateNumEntries());
         }
     }
 
