@@ -5,6 +5,7 @@ import cc.dont_panic.experiments.kafka.data.PersistedProperty;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.*;
+import org.apache.kafka.streams.errors.StreamsUncaughtExceptionHandler;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
@@ -76,7 +77,10 @@ public class KafkaStreamsApp {
             addShutdownHook(kafkaStreams, shutdownLatch);
             try {
                 kafkaStreams.setStateListener((newState, oldState) -> onStateChange(kafkaStreams, newState, oldState, shutdownLatch));
-                kafkaStreams.setUncaughtExceptionHandler((Thread t, Throwable e) -> e.printStackTrace());
+                kafkaStreams.setUncaughtExceptionHandler(t -> {
+                    t.printStackTrace();
+                    return StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse.SHUTDOWN_APPLICATION;
+                });
                 kafkaStreams.start();
 
                 shutdownLatch.await();
@@ -94,7 +98,7 @@ public class KafkaStreamsApp {
         if (newState == KafkaStreams.State.RUNNING) {
             new Thread(() -> {
                 try {
-                    Thread.sleep(10_000);
+                    Thread.sleep(300_000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
