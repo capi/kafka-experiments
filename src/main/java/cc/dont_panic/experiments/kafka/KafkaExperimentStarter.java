@@ -3,6 +3,7 @@ package cc.dont_panic.experiments.kafka;
 import cc.dont_panic.experiments.kafka.data.ChangeRequest;
 import cc.dont_panic.experiments.kafka.data.ChangeRequestStreamGenerator;
 import cc.dont_panic.experiments.kafka.data.PersistedProperty;
+import cc.dont_panic.experiments.kafka.infra.ServerSocketInstanceIdProvider;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -13,22 +14,24 @@ import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
+import java.io.IOException;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 public class KafkaExperimentStarter {
 
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
-        KafkaConfig config = new KafkaConfig();
-        KafkaTopicCreator kafkaTopicCreator = new KafkaTopicCreator(config);
-        kafkaTopicCreator.createMissingTopics();
+    public static void main(String[] args) throws ExecutionException, InterruptedException, IOException {
+        try (var instanceIdProvider = new ServerSocketInstanceIdProvider(12000, 12100)) {
+            KafkaConfig config = new KafkaConfig(instanceIdProvider);
+            KafkaTopicCreator kafkaTopicCreator = new KafkaTopicCreator(config);
+            kafkaTopicCreator.createMissingTopics();
 
-        try (Producer<Long, ChangeRequest> changeRequestProducer = createChangeRequestProducer(config)) {
-            ChangeRequestStreamGenerator changeStreamGenerator = new ChangeRequestStreamGenerator(new Random(), 1, 5);
-            ChangeRequestPublisher changeRequestPublisher = new ChangeRequestPublisher(config, changeRequestProducer, changeStreamGenerator, false);
-            changeRequestPublisher.publishChanges(10);
-        }
+            try (Producer<Long, ChangeRequest> changeRequestProducer = createChangeRequestProducer(config)) {
+                ChangeRequestStreamGenerator changeStreamGenerator = new ChangeRequestStreamGenerator(new Random(), 1, 5);
+                ChangeRequestPublisher changeRequestPublisher = new ChangeRequestPublisher(config, changeRequestProducer, changeStreamGenerator, false);
+                changeRequestPublisher.publishChanges(10);
+            }
 
 //        try (Consumer<Long, ChangeRequest> changeRecordConsumer = createChangeRequestConsumer(config)) {
 //            try (Producer<String, PersistedProperty> stateProducer = createStateProducer(config)) {
@@ -37,10 +40,11 @@ public class KafkaExperimentStarter {
 //            }
 //        }
 
-        KafkaStreamsApp kafkaStreamsApp = new KafkaStreamsApp(config);
-        kafkaStreamsApp.run();
+            KafkaStreamsApp kafkaStreamsApp = new KafkaStreamsApp(config);
+            kafkaStreamsApp.run();
 
-        System.out.println("Done");
+            System.out.println("Done");
+        }
     }
 
     private static Producer<Long, ChangeRequest> createChangeRequestProducer(KafkaConfig config) {

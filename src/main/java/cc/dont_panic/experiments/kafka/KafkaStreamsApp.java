@@ -2,6 +2,7 @@ package cc.dont_panic.experiments.kafka;
 
 import cc.dont_panic.experiments.kafka.data.ChangeRequest;
 import cc.dont_panic.experiments.kafka.data.PersistedProperty;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.*;
@@ -30,8 +31,12 @@ public class KafkaStreamsApp {
     }
 
     public void run() {
+        var instanceId = kafkaConfig.getInstanceId();
+        System.out.println("This is instance " + instanceId);
+
         Properties streamsProps = new Properties();
         streamsProps.put(StreamsConfig.APPLICATION_ID_CONFIG, "my-streams-application");
+        streamsProps.put(ConsumerConfig.GROUP_INSTANCE_ID_CONFIG, instanceId);
         streamsProps.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.getBootstrapServer());
         streamsProps.put(StreamsConfig.STATE_DIR_CONFIG, ensureStateDir().toAbsolutePath().toString());
         streamsProps.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, "2500");
