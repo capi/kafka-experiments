@@ -29,7 +29,7 @@ public class KafkaTopicCreator {
         );
 
         try(Admin admin = Admin.create(properties)) {
-            int partitions = 32;
+            int partitions = 3;
             short replicationFactor = 1;
 
             // Create state-topic as a compacted topic with 'lz4' compression codec

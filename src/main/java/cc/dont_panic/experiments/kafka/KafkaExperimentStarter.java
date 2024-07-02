@@ -27,11 +27,11 @@ public class KafkaExperimentStarter {
             KafkaTopicCreator kafkaTopicCreator = new KafkaTopicCreator(config);
             kafkaTopicCreator.createMissingTopics();
 
-            try (Producer<Long, ChangeRequest> changeRequestProducer = createChangeRequestProducer(config)) {
-                ChangeRequestStreamGenerator changeStreamGenerator = new ChangeRequestStreamGenerator(new Random(), 1, 5);
-                ChangeRequestPublisher changeRequestPublisher = new ChangeRequestPublisher(config, changeRequestProducer, changeStreamGenerator, false);
-                changeRequestPublisher.publishChanges(10);
-            }
+//            try (Producer<Long, ChangeRequest> changeRequestProducer = createChangeRequestProducer(config)) {
+//                ChangeRequestStreamGenerator changeStreamGenerator = new ChangeRequestStreamGenerator(new Random(), 1, 5);
+//                ChangeRequestPublisher changeRequestPublisher = new ChangeRequestPublisher(config, changeRequestProducer, changeStreamGenerator, false);
+//                changeRequestPublisher.publishChanges(10);
+//            }
 
 //        try (Consumer<Long, ChangeRequest> changeRecordConsumer = createChangeRequestConsumer(config)) {
 //            try (Producer<String, PersistedProperty> stateProducer = createStateProducer(config)) {

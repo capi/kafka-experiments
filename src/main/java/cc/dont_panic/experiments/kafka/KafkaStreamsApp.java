@@ -2,6 +2,7 @@ package cc.dont_panic.experiments.kafka;
 
 import cc.dont_panic.experiments.kafka.data.ChangeRequest;
 import cc.dont_panic.experiments.kafka.data.PersistedProperty;
+import cc.dont_panic.experiments.kafka.statestore.MyStateStores;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -61,13 +62,14 @@ public class KafkaStreamsApp {
 
         KTable<String, PersistedProperty> table = builder
                 .table(kafkaConfig.getStateTopicName(),
-                        Consumed.with(Serdes.String(), PersistedProperty.SERDE)
-                                /*.withTimestampExtractor(tableTimestampExtractor)*/,
-                        Materialized.<String, PersistedProperty, KeyValueStore<Bytes, byte[]>>as("state-store")
+//                        Consumed.with(Serdes.String(), PersistedProperty.SERDE)
+//                                /*.withTimestampExtractor(tableTimestampExtractor)*/,
+//                        //Materialized.<String, PersistedProperty, KeyValueStore<Bytes, byte[]>>as("state-store")
+                        Materialized.<String, PersistedProperty>as(MyStateStores.builder("state-store").keyValueStore())
                                 .withKeySerde(Serdes.String())
-                                .withValueSerde(PersistedProperty.SERDE));
-        // flush the changes back to state topic
-        table.toStream().to(kafkaConfig.getStateTopicName());
+                                .withValueSerde(PersistedProperty.SERDE)
+                                .withLoggingDisabled()
+                                .withCachingDisabled());
 
         KStream<Long, ChangeRequest> changeRequestStream = builder.stream(kafkaConfig.getChangeRequestsTopicName(),
                 Consumed.with(Serdes.Long(), ChangeRequest.SERDE));
@@ -84,7 +86,7 @@ public class KafkaStreamsApp {
                 kafkaStreams.setStateListener((newState, oldState) -> onStateChange(kafkaStreams, newState, oldState, shutdownLatch));
                 kafkaStreams.setUncaughtExceptionHandler(t -> {
                     t.printStackTrace();
-                    return StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse.SHUTDOWN_APPLICATION;
+                    return StreamsUncaughtExceptionHandler.StreamThreadExceptionResponse.SHUTDOWN_CLIENT;
                 });
                 kafkaStreams.start();
 
